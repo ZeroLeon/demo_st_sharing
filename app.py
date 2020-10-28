@@ -8,7 +8,6 @@ import jieba.posseg
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
-import swifter
 stwlist=[line.strip() for line in open('stopwords.txt','r',encoding='utf-8').readlines()]
 drop_list = ['r', 'f', 's', 'i', 'q', 'ad', 'z', 'u', 'd', 'c', 'ul', 't','o','m']
 
@@ -95,7 +94,7 @@ def process_data(df,data_col):
     # df = df.sample(5000).copy() #test mode
     dt = df_raw.copy()
     dt.dropna(subset=[data_col],inplace=True)
-    dt['cutted'] = dt[data_col].swifter.apply(lambda x:list(jieba.posseg.cut((str(x)))))
+    dt['cutted'] = dt[data_col].apply(lambda x:list(jieba.posseg.cut((str(x)))))
     return dt
 
 df =get_data()
