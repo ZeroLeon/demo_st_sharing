@@ -1,15 +1,20 @@
 import streamlit as st
 
 import streamlit as st
-from wordcloud import WordCloud,STOPWORDS
+
 import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 import jieba.posseg
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap
+from wordcloud import WordCloud,STOPWORDS
 stwlist=[line.strip() for line in open('stopwords.txt','r',encoding='utf-8').readlines()]
 drop_list = ['r', 'f', 's', 'i', 'q', 'ad', 'z', 'u', 'd', 'c', 'ul', 't','o','m']
+
+
+# link = "https://docs.google.com/spreadsheets/d/1Ke3c-2LKUxiAVbPdAC9FPss8AD7j2Dxo8PdtqYuWmbw/export?format=csv"
+link = './taptap_bad_comment.csv'
 
 @st.cache()
 def plotly_wordcloud(text):
@@ -79,34 +84,40 @@ def plot_word2(text):
         random_state = 0,
     ).generate(text)
     # Display the generated image:
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.show()
-    st.pyplot()
-@st.cache()
-def get_data():
-    file_ID = '1JA4vvS-hXexGN7bizBcXsFxx8g5Is1Ps'
-    df = pd.read_excel(f'https://drive.google.com/uc?export=download&id={file_ID}')
-    return df
+    fig, ax = plt.subplots()
+    # plt.imshow(wordcloud, interpolation='bilinear')
+    # plt.axis("off")
+    # plt.show()
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis("off")
+    # ax.show()
+    st.pyplot(fig)
+# @st.cache()
+# def get_data():
+#     file_ID = '1JA4vvS-hXexGN7bizBcXsFxx8g5Is1Ps'
+#     df = pd.read_excel(f'https://drive.google.com/uc?export=download&id={file_ID}')
+#     return df
 
 @st.cache()
 def process_data(df,data_col):
     # df = df.sample(5000).copy() #test mode
-    dt = df_raw.copy()
+    dt = df.copy()
     dt.dropna(subset=[data_col],inplace=True)
     dt['cutted'] = dt[data_col].apply(lambda x:list(jieba.posseg.cut((str(x)))))
     return dt
 
-df =get_data()
+# df =get_data()
 
-data_col = 'content'
+data_col = 'comment'
 # df = process_data(df_raw,data_col)
 
 
 
 
-def write(df):
+def write(link):
     """Used to write the page in the app.py file"""
+    df = pd.read_csv(link)
+
     dt = process_data(df,data_col)
 
     with st.spinner("Loading 词云工具 ..."):
@@ -139,5 +150,5 @@ def write(df):
 
 
 if __name__ == "__main__":
-    write(df)
+    write(link)
 
